@@ -1,0 +1,73 @@
+scale: 3
+model: HAT
+gpu_ids: [0]
+accelerate: true
+dataset:
+  train:
+    name: DIV2K
+    mode: LRHR
+    dataroot: /path/to/DIV2K
+    subset_file: /path/to/DIV2K_train_sub.txt
+    batch_size: 16
+    num_workers: 8
+  val:
+    name: Set5
+    mode: LRHR
+    dataroot: /path/to/Set5
+    subset_file: /path/to/Set5_val_sub.txt
+    batch_size: 1
+    num_workers: 4
+network_G:
+  which_model_G: hat
+  num_in_ch: 3
+  num_out_ch: 3
+  num_feat: 64
+  num_block: 8
+  num_grow_ch: 32
+  num_head: 4
+  num_group: 8
+  upscale: 3
+  res_scale: 1
+  img_range: 1
+  rgb_mean: [0.4488, 0.4371, 0.4040]
+  rgb_std: [1.0, 1.0, 1.0]
+  pretrained_path: null
+network_D:
+  which_model_D: nlayer
+  num_in_ch: 3
+  num_feat: 64
+  num_layer: 3
+  norm_type: batch
+  act_type: leakyrelu
+  mode: C
+  gan_type: lsgan
+  pretrained_path: null
+train:
+  optim_G:
+    type: adam
+    lr: 1e-4
+    weight_decay: 0
+    betas: [0.9, 0.99]
+  optim_D:
+    type: adam
+    lr: 1e-4
+    weight_decay: 0
+    betas: [0.9, 0.99]
+  scheduler_G:
+    type: MultiStepLR
+    milestones: [200000, 400000, 600000, 800000]
+    gamma: 0.5
+  scheduler_D:
+    type: MultiStepLR
+    milestones: [200000, 400000, 600000, 800000]
+    gamma: 0.5
+  total_iter: 1000000
+  val_freq: 5000
+  save_checkpoint_freq: 5000
+  print_freq: 100
+  save_img_freq: 5000
+  save_model_freq: 5000
+  log_wandb: true
+  wandb_project: HAT
+  wandb_entity: your_wandb_entity
+  wandb_run_name: HAT_SRx3_from_scratch

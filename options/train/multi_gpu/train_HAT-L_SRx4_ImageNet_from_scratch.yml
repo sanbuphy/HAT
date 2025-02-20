@@ -1,0 +1,44 @@
+# Configuration for training HAT-L_SRx4 from scratch on ImageNet using multi-GPU with accelerate
+
+experiment_name: HAT-L_SRx4_ImageNet_from_scratch
+model: HAT-L
+scale: 4
+gpu_ids: [0, 1, 2, 3]  # List of GPU IDs for multi-GPU training
+accelerate: true  # Enable accelerate for parallel training
+
+datasets:
+  train:
+    name: ImageNet
+    dataroot: /path/to/imagenet/train
+    batch_size: 64
+    num_workers: 8
+    augment: true
+  val:
+    name: ImageNet
+    dataroot: /path/to/imagenet/val
+    batch_size: 16
+    num_workers: 4
+
+network_G:
+  which_model_G: HAT-L
+  num_blocks: 16
+  num_features: 64
+
+training:
+  lr: 1e-4
+  beta1: 0.9
+  beta2: 0.999
+  weight_decay: 0
+  num_epochs: 1000
+  lr_scheduler: step
+  lr_step_size: 200
+  lr_gamma: 0.5
+
+loss:
+  type: l1
+  weight: 1.0
+
+logging:
+  save_checkpoint_freq: 10
+  save_image_freq: 5
+  log_freq: 100
