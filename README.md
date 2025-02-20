@@ -110,6 +110,52 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m torch.distributed.launch --nproc_
 
 The training logs and weights will be saved in the `./experiments` folder.
 
+## Using Accelerate for Parallel Training
+
+### Single-GPU Training
+
+To perform single-GPU training using `accelerate`, you can use the following command:
+
+```
+accelerate launch hat/train.py -opt options/train/train_HAT_SRx2_from_scratch.yml
+```
+
+### Multi-GPU Training
+
+To perform multi-GPU training using `accelerate`, you can use the following command:
+
+```
+accelerate launch --multi_gpu hat/train.py -opt options/train/train_HAT_SRx2_from_scratch.yml
+```
+
+### Example Configuration Files
+
+Here are example configuration files for single and multi-GPU training using `accelerate`:
+
+#### Single-GPU Configuration
+
+```yaml
+# options/train/train_HAT_SRx2_from_scratch.yml
+accelerate:
+  mixed_precision: fp16
+  cpu: false
+  deepspeed_config: null
+```
+
+#### Multi-GPU Configuration
+
+```yaml
+# options/train/train_HAT_SRx2_from_scratch.yml
+accelerate:
+  mixed_precision: fp16
+  multi_gpu: true
+  num_processes: 1
+  num_machines: 1
+  machine_rank: 0
+  main_process_ip: 127.0.0.1
+  main_process_port: 29500
+```
+
 ## Results
 The inference results on benchmark datasets are available at
 [Google Drive](https://drive.google.com/drive/folders/1t2RdesqRVN7L6vCptneNRcpwZAo-Ub3L?usp=sharing) or [Baidu Netdisk](https://pan.baidu.com/s/1CQtLpty-KyZuqcSznHT_Zw) (access code: 63p5).

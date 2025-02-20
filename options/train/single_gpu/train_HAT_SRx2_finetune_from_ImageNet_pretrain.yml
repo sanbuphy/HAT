@@ -1,7 +1,7 @@
 # general settings
-name: train_HAT_SRx4_finetune_from_SRx2
+name: train_HAT_SRx2_finetune_from_ImageNet_pretrain
 model_type: HATModel
-scale: 4
+scale: 2
 num_gpu: auto
 manual_seed: 0
 
@@ -11,12 +11,12 @@ datasets:
     name: DF2K
     type: PairedImageDataset
     dataroot_gt: datasets/DF2K/DF2K_HR_sub
-    dataroot_lq: datasets/DF2K/DF2K_bicx4_sub
+    dataroot_lq: datasets/DF2K/DF2K_bicx2_sub
     meta_info_file: hat/data/meta_info/meta_info_DF2Ksub_GT.txt
     io_backend:
       type: disk
 
-    gt_size: 256
+    gt_size: 128
     use_hflip: true
     use_rot: true
 
@@ -30,24 +30,24 @@ datasets:
   val_1:
     name: Set5
     type: PairedImageDataset
-    dataroot_gt: ./datasets/Set5/GTmod4
-    dataroot_lq: ./datasets/Set5/LRbicx4
+    dataroot_gt: ./datasets/Set5/GTmod2
+    dataroot_lq: ./datasets/Set5/LRbicx2
     io_backend:
       type: disk
 
   val_2:
     name: Set14
     type: PairedImageDataset
-    dataroot_gt: ./datasets/Set14/GTmod4
-    dataroot_lq: ./datasets/Set14/LRbicx4
+    dataroot_gt: ./datasets/Set14/GTmod2
+    dataroot_lq: ./datasets/Set14/LRbicx2
     io_backend:
       type: disk
 
   # val_3:
   #   name: Urban100
   #   type: PairedImageDataset
-  #   dataroot_gt: ./datasets/urban100/GTmod4
-  #   dataroot_lq: ./datasets/urban100/LRbicx4
+  #   dataroot_gt: ./datasets/urban100/GTmod2
+  #   dataroot_lq: ./datasets/urban100/LRbicx2
   #   io_backend:
   #     type: disk
 
@@ -55,7 +55,7 @@ datasets:
 # network structures
 network_g:
   type: HAT
-  upscale: 4
+  upscale: 2
   in_chans: 3
   img_size: 64
   window_size: 16
@@ -73,7 +73,7 @@ network_g:
 
 # path
 path:
-  pretrain_network_g: ./experiments/train_HAT_SRx2_from_scratch/models/net_g_latest.pth
+  pretrain_network_g: ./experiments/train_HAT_SRx2_ImageNet_from_scratch/models/net_g_latest.pth
   param_key_g: 'params_ema'
   strict_load_g: true
   resume_state: ~
@@ -83,7 +83,7 @@ train:
   ema_decay: 0.999
   optim_g:
     type: Adam
-    lr: !!float 1e-4
+    lr: !!float 1e-5
     weight_decay: 0
     betas: [0.9, 0.99]
 
@@ -110,12 +110,12 @@ val:
   metrics:
     psnr:
       type: calculate_psnr
-      crop_border: 4
+      crop_border: 2
       test_y_channel: true
       better: higher  # the higher, the better. Default: higher
     ssim:
       type: calculate_ssim
-      crop_border: 4
+      crop_border: 2
       test_y_channel: true
       better: higher  # the higher, the better. Default: higher
 
@@ -138,19 +138,3 @@ accelerate:
   mixed_precision: fp16
   cpu: false
   deepspeed_config: null
-
-# Single-GPU training configuration
-accelerate:
-  mixed_precision: fp16
-  cpu: false
-  deepspeed_config: null
-
-# Multi-GPU training configuration
-accelerate:
-  mixed_precision: fp16
-  multi_gpu: true
-  num_processes: 1
-  num_machines: 1
-  machine_rank: 0
-  main_process_ip: 127.0.0.1
-  main_process_port: 29500

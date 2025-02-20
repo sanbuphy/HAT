@@ -162,3 +162,19 @@ accelerate:
   mixed_precision: fp16
   cpu: false
   deepspeed_config: null
+
+# Single-GPU training configuration
+accelerate:
+  mixed_precision: fp16
+  cpu: false
+  deepspeed_config: null
+
+# Multi-GPU training configuration
+accelerate:
+  mixed_precision: fp16
+  multi_gpu: true
+  num_processes: 1
+  num_machines: 1
+  machine_rank: 0
+  main_process_ip: 127.0.0.1
+  main_process_port: 29500

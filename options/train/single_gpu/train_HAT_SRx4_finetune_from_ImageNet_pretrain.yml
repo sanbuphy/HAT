@@ -1,5 +1,5 @@
 # general settings
-name: train_HAT_SRx4_finetune_from_SRx2
+name: train_HAT_SRx4_finetune_from_ImageNet_pretrain
 model_type: HATModel
 scale: 4
 num_gpu: auto
@@ -73,7 +73,7 @@ network_g:
 
 # path
 path:
-  pretrain_network_g: ./experiments/train_HAT_SRx2_from_scratch/models/net_g_latest.pth
+  pretrain_network_g: ./experiments/train_HAT_SRx4_ImageNet_from_scratch/models/net_g_latest.pth
   param_key_g: 'params_ema'
   strict_load_g: true
   resume_state: ~
@@ -83,7 +83,7 @@ train:
   ema_decay: 0.999
   optim_g:
     type: Adam
-    lr: !!float 1e-4
+    lr: !!float 1e-5
     weight_decay: 0
     betas: [0.9, 0.99]
 
@@ -138,19 +138,3 @@ accelerate:
   mixed_precision: fp16
   cpu: false
   deepspeed_config: null
-
-# Single-GPU training configuration
-accelerate:
-  mixed_precision: fp16
-  cpu: false
-  deepspeed_config: null
-
-# Multi-GPU training configuration
-accelerate:
-  mixed_precision: fp16
-  multi_gpu: true
-  num_processes: 1
-  num_machines: 1
-  machine_rank: 0
-  main_process_ip: 127.0.0.1
-  main_process_port: 29500
