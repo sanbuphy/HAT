@@ -9,6 +9,7 @@ from basicsr.utils.img_process_util import filter2D
 from basicsr.utils.registry import MODEL_REGISTRY
 from collections import OrderedDict
 from torch.nn import functional as F
+from accelerate import Accelerator
 
 
 @MODEL_REGISTRY.register()
@@ -25,6 +26,7 @@ class RealHATGANModel(SRGANModel):
         self.jpeger = DiffJPEG(differentiable=False).cuda()  # simulate JPEG compression artifacts
         self.usm_sharpener = USMSharp().cuda()  # do usm sharpening
         self.queue_size = opt.get('queue_size', 180)
+        self.accelerator = Accelerator()
 
     @torch.no_grad()
     def _dequeue_and_enqueue(self):

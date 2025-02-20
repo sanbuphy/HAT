@@ -132,3 +132,9 @@ logger:
 dist_params:
   backend: nccl
   port: 29500
+
+# accelerate settings
+accelerate:
+  mixed_precision: fp16
+  cpu: false
+  deepspeed_config: null
