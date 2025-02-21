@@ -102,58 +102,43 @@ The testing results will be saved in the `./results` folder.
 ## How To Train
 - Refer to `./options/train` for the configuration file of the model to train.
 - Preparation of training data can refer to [this page](https://github.com/XPixelGroup/BasicSR/blob/master/docs/DatasetPreparation.md). ImageNet dataset can be downloaded at the [official website](https://image-net.org/challenges/LSVRC/2012/2012-downloads.php).
-- The training command is like
-```
-CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m torch.distributed.launch --nproc_per_node=8 --master_port=4321 hat/train.py -opt options/train/train_HAT_SRx2_from_scratch.yml --launcher pytorch
-```
-- Note that the default batch size per gpu is 4, which will cost about 20G memory for each GPU.  
 
-The training logs and weights will be saved in the `./experiments` folder.
+### Training with Accelerate
 
-## Using Accelerate for Parallel Training
+我们提供了使用 Accelerate 进行训练的支持，这使得单卡和多卡训练变得更加简单。
 
-### Single-GPU Training
-
-To perform single-GPU training using `accelerate`, you can use the following command:
-
-```
+#### 单卡训练
+```bash
+# 使用默认配置
 accelerate launch hat/train.py -opt options/train/train_HAT_SRx2_from_scratch.yml
+
+# 或者指定配置文件
+accelerate config  # 首次运行需要配置
+accelerate launch --config_file accelerate_config.yaml hat/train.py -opt options/train/train_HAT_SRx2_from_scratch.yml
 ```
 
-### Multi-GPU Training
-
-To perform multi-GPU training using `accelerate`, you can use the following command:
-
-```
+#### 多卡训练
+```bash
+# 使用默认多卡配置
 accelerate launch --multi_gpu hat/train.py -opt options/train/train_HAT_SRx2_from_scratch.yml
+
+# 或者指定配置文件
+accelerate launch --config_file accelerate_multi_gpu_config.yaml hat/train.py -opt options/train/train_HAT_SRx2_from_scratch.yml
 ```
 
-### Example Configuration Files
+#### Accelerate 配置示例
 
-Here are example configuration files for single and multi-GPU training using `accelerate`:
-
-#### Single-GPU Configuration
+训练配置文件中的 accelerate 部分示例：
 
 ```yaml
-# options/train/train_HAT_SRx2_from_scratch.yml
+# 基础配置
 accelerate:
-  mixed_precision: fp16
-  cpu: false
-  deepspeed_config: null
-```
-
-#### Multi-GPU Configuration
-
-```yaml
-# options/train/train_HAT_SRx2_from_scratch.yml
-accelerate:
-  mixed_precision: fp16
-  multi_gpu: true
-  num_processes: 1
-  num_machines: 1
-  machine_rank: 0
-  main_process_ip: 127.0.0.1
-  main_process_port: 29500
+  mixed_precision: fp16  # 使用混合精度训练
+  cpu: false  # 是否使用CPU训练
+  deepspeed_config: null  # DeepSpeed配置，默认不使用
+  num_processes: auto  # 自动检测GPU数量
+  num_machines: 1  # 机器数量
+  machine_rank: 0  # 机器rank
 ```
 
 ## Results
