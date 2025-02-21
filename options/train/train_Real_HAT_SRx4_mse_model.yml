@@ -162,16 +162,6 @@ accelerate:
   mixed_precision: fp16
   cpu: false
   deepspeed_config: null
-
-# Single-GPU training configuration
-accelerate:
-  mixed_precision: fp16
-  cpu: false
-  deepspeed_config: null
-
-# Multi-GPU training configuration
-accelerate:
-  mixed_precision: fp16
   multi_gpu: true
   num_processes: 1
   num_machines: 1
