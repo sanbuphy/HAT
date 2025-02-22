@@ -126,10 +126,7 @@ logger:
     project: ~
     resume_id: ~
 
-# dist training settings
-dist_params:
-  backend: nccl
-  port: 29500
+
 
 # accelerate settings
 accelerate:

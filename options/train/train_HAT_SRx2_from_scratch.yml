@@ -4,12 +4,13 @@ model_type: HATModel
 scale: 2
 num_gpu: auto
 manual_seed: 0
-
+phase: train
 # dataset and data loader settings
 datasets:
   train:
     name: DF2K
     type: PairedImageDataset
+    phase: train
     dataroot_gt: datasets/DF2K/DF2K_HR_sub
     dataroot_lq: datasets/DF2K/DF2K_bicx2_sub
     meta_info_file: hat/data/meta_info/meta_info_DF2Ksub_GT.txt
@@ -30,6 +31,7 @@ datasets:
   val_1:
     name: Set5
     type: PairedImageDataset
+    phase: val
     dataroot_gt: ./datasets/Set5/GTmod2
     dataroot_lq: ./datasets/Set5/LRbicx2
     io_backend:
@@ -38,6 +40,7 @@ datasets:
   val_2:
     name: Set14
     type: PairedImageDataset
+    phase: val
     dataroot_gt: ./datasets/Set14/GTmod2
     dataroot_lq: ./datasets/Set14/LRbicx2
     io_backend:
@@ -76,6 +79,8 @@ path:
   pretrain_network_g: ~
   strict_load_g: true
   resume_state: ~
+  experiments_root: experiments/train_HAT_SRx2_from_scratch
+  log: experiments/train_HAT_SRx2_from_scratch
 
 # training settings
 train:
@@ -127,10 +132,6 @@ logger:
     project: ~
     resume_id: ~
 
-# dist training settings
-dist_params:
-  backend: nccl
-  port: 29500
 
 # accelerate settings
 accelerate:

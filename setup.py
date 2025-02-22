@@ -87,10 +87,9 @@ if __name__ == '__main__':
         description='HAT',
         long_description=readme(),
         long_description_content_type='text/markdown',
-        author='Xiangyu Chen',
-        author_email='chxy95@gmail.com',
+        author='sanbuphy',
         keywords='computer vision, pytorch, basicsr, image restoration, super-resolution',
-        url='https://github.com/chxy95/HAT',
+        url='https://github.com/sanbuphy/HAT',
         include_package_data=True,
         packages=find_packages(exclude=('options', 'datasets', 'experiments', 'results', 'tb_logger', 'wandb')),
         classifiers=[

@@ -2,7 +2,7 @@
 name: train_HAT-S_SRx2_from_scratch
 model_type: HATModel
 scale: 2
-num_gpu: auto
+num_gpu: 4
 manual_seed: 0
 
 # dataset and data loader settings
@@ -10,9 +10,10 @@ datasets:
   train:
     name: DF2K
     type: PairedImageDataset
-    dataroot_gt: datasets/DF2K/DF2K_HR_sub
-    dataroot_lq: datasets/DF2K/DF2K_bicx2_sub
-    meta_info_file: hct/data/meta_info/meta_info_DF2Ksub_GT.txt
+    phase: train
+    dataroot_gt: datasets/DF2K/DF2K_HR_paired/DF2K_HR_sub/
+    dataroot_lq: datasets/DF2K/DF2K_HR_paired/DF2K_HR_sub/LRbicx2
+    meta_info_file: datasets/DF2K/meta_info_DIV2K_sub_pair.txt
     io_backend:
       type: disk
 
@@ -22,14 +23,16 @@ datasets:
 
     # data loader
     use_shuffle: true
-    num_worker_per_gpu: 6
-    batch_size_per_gpu: 4
+    num_worker_per_gpu: 10
+    batch_size_per_gpu: 8
     dataset_enlarge_ratio: 1
-    prefetch_mode: ~
+    prefetch_mode: cpu
+    pin_memory: true
 
   val:
     name: Set5
     type: PairedImageDataset
+    phase: val
     dataroot_gt: datasets/Set5/GTmod2
     dataroot_lq: datasets/Set5/LRbicx2
     io_backend:
@@ -38,6 +41,7 @@ datasets:
   val_2:
     name: Set14
     type: PairedImageDataset
+    phase: val
     dataroot_gt: datasets/Set14/GTmod2
     dataroot_lq: datasets/Set14/LRbicx2
     io_backend:
@@ -46,6 +50,7 @@ datasets:
   val_3:
     name: Urban100
     type: PairedImageDataset
+    phase: val
     dataroot_gt: datasets/urban100/GTmod2
     dataroot_lq: datasets/urban100/LRbicx2
     io_backend:
@@ -76,6 +81,8 @@ path:
   pretrain_network_g: ~
   strict_load_g: true
   resume_state: ~
+  experiments_root: experiments/train_HAT-S_SRx2_from_scratch
+  log: experiments/train_HAT-S_SRx2_from_scratch
 
 # training settings
 train:
@@ -91,7 +98,7 @@ train:
     milestones: [250000, 400000, 450000, 475000]
     gamma: 0.5
 
-  total_iter: 500000
+  total_iter: 100000
   warmup_iter: -1  # no warm up
 
   # losses
@@ -102,7 +109,7 @@ train:
 
 # validation settings
 val:
-  val_freq: !!float 2e4
+  val_freq: !!float 5000
   save_img: false
   pbar: False
 
@@ -121,25 +128,15 @@ val:
 # logging settings
 logger:
   print_freq: 100
-  save_checkpoint_freq: !!float 2e4
+  save_checkpoint_freq: !!float 20000
   use_tb_logger: true
   wandb:
-    project: ~
-    resume_id: ~
+    project: HAT-multiGPU
+    resume_id: HAT-S_SRx2_from_scratch
 
-# dist training settings
-dist_params:
-  backend: nccl
-  port: 29500
+
 
 # accelerate settings
 accelerate:
   mixed_precision: fp16
   cpu: false
-  deepspeed_config: null
-  multi_gpu: true
-  num_processes: 1
-  num_machines: 1
-  machine_rank: 0
-  main_process_ip: 127.0.0.1
-  main_process_port: 29500

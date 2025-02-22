@@ -16,7 +16,7 @@ class HATModel(SRModel):
 
     def __init__(self, opt):
         super(HATModel, self).__init__(opt)
-        self.accelerator = Accelerator()
+        self.accelerator = opt.get('accelerator', None)
 
     def pre_process(self):
         # pad to multiplication of window_size
@@ -35,12 +35,18 @@ class HATModel(SRModel):
         if hasattr(self, 'net_g_ema'):
             self.net_g_ema.eval()
             with torch.no_grad():
-                self.output = self.accelerator.unwrap_model(self.net_g_ema)(self.img)
+                if self.accelerator is not None:
+                    self.output = self.accelerator.unwrap_model(self.net_g_ema)(self.img)
+                else:
+                    self.output = self.net_g_ema(self.img)
         else:
             self.net_g.eval()
             with torch.no_grad():
-                self.output = self.accelerator.unwrap_model(self.net_g)(self.img)
-            # self.net_g.train()
+                if self.accelerator is not None:
+                    self.output = self.accelerator.unwrap_model(self.net_g)(self.img)
+                else:
+                    self.output = self.net_g(self.img)
+            self.net_g.train()
 
     def tile_process(self):
         """It will first crop input images to tiles, and then process each tile.
@@ -86,11 +92,11 @@ class HATModel(SRModel):
                     if hasattr(self, 'net_g_ema'):
                         self.net_g_ema.eval()
                         with torch.no_grad():
-                            output_tile = self.accelerator.unwrap_model(self.net_g_ema)(input_tile)
+                            output_tile = self.accelerator(input_tile)
                     else:
                         self.net_g.eval()
                         with torch.no_grad():
-                            output_tile = self.accelerator.unwrap_model(self.net_g)(input_tile)
+                            output_tile = self.accelerator(input_tile)
                 except RuntimeError as error:
                     print('Error', error)
                 print(f'\tTile {tile_idx}/{tiles_x * tiles_y}')
